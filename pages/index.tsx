@@ -6,7 +6,8 @@ import styled from "styled-components"
 
 
 interface ITouchWidth{
-  width: number
+  width: number,
+  onClick?: any
 }
 
 interface IOperator{
@@ -29,6 +30,18 @@ interface IAdditionalOperator{
 
 interface IStyledInput{
   isInputError: boolean
+}
+interface IDeleteOperatorWrapper{
+  onClick: any
+}
+
+interface IStyledOperator{
+  onTouchStart?: any,
+  onTouchMove?: any,
+  onTouchEnd?: any,
+  onMouseOver?: any,
+  onMouseOut?: any,
+
 }
 
 
@@ -116,17 +129,17 @@ const AdditionalOperator = ({operators, setOperators, operator} : IAdditionalOpe
   const [initialSlideX, setInitialSlideX] = useState(0);
   const [deleteOperatorTouchWidth, setDeleteOperatorTouchWidth] = useState(0);
 
-  const deleteOperator = (e : React.MouseEvent<HTMLButtonElement> | null) => {
+  const deleteOperator = (e : React.MouseEvent<HTMLButtonElement> | null): void => {
     e?.stopPropagation()
     setOperators((prev : Array<IOperator>) => prev.filter((op) => JSON.stringify(op) !== JSON.stringify(operator)))
     localStorage.setItem('operators', JSON.stringify(operators.filter((op) => JSON.stringify(op) !== JSON.stringify(operator))))
   }
 
-  const onTouchStart = (e: React.TouchEvent<HTMLButtonElement>) => {setTouch(true); setInitialSlideX(e.touches[0].clientX) };
+  const onTouchStart = (e: React.TouchEvent<HTMLButtonElement>): void => {setTouch(true); setInitialSlideX(e.touches[0].clientX) };
 
-  const onTouchMove = (e: React.TouchEvent<HTMLButtonElement>) => {setDeleteOperatorTouchWidth(-(initialSlideX - e.touches[0].clientX) > 75? 75: -(initialSlideX - e.touches[0].clientX) < 0 ?  0: -(initialSlideX - e.touches[0].clientX))};
+  const onTouchMove = (e: React.TouchEvent<HTMLButtonElement>): void => {setDeleteOperatorTouchWidth(-(initialSlideX - e.touches[0].clientX) > 75? 75: -(initialSlideX - e.touches[0].clientX) < 0 ?  0: -(initialSlideX - e.touches[0].clientX))};
 
-  const onTouchEnd = (e: React.TouchEvent<HTMLButtonElement>) => {setTouch(false); deleteOperatorTouchWidth > 0  && deleteOperator(null)};
+  const onTouchEnd = (e: React.TouchEvent<HTMLButtonElement>): void => {setTouch(false); deleteOperatorTouchWidth > 0  && deleteOperator(null)};
 
   const DeleteOperator = () => {
     return(
@@ -201,19 +214,16 @@ const AddOperatopPopup = ({operators, setOperators, quitPopup} : IAddOperatopPop
 }
 
 
-const StyledInput = styled.input`
+const StyledInput = styled.input<IStyledInput>`
   width: 20rem;
   font-size: 1.4rem;
   border: none;
   border-bottom: 2px solid;
   padding: 0.5rem 0.2rem;
-  border-bottom-color: ${(props: IStyledInput) => props.isInputError? '#FE0000' : '#474747'};
+  border-bottom-color: ${props => props.isInputError? '#FE0000' : '#474747'};
   :focus{
       border-bottom-color: #fff;
       outline: none;
-  }
-  :placeholder{
-      color: #fff;
   }
 `;
 
@@ -367,7 +377,7 @@ const StyledOperators = styled.div`
 `;
 
 
-const StyledOperator = styled.div`
+const StyledOperator = styled.div<IStyledOperator>`
   position: relative;
   display: flex;
   flex-direction: column;
@@ -393,7 +403,7 @@ const StyledOperatorName = styled.h1`
 `;
 
   
-const DeleteOperatorWrapper = styled.div`
+const DeleteOperatorWrapper = styled.div<IDeleteOperatorWrapper>`
   position: absolute;
   right: 0;
   top: 0;
@@ -403,7 +413,7 @@ const DeleteOperatorWrapper = styled.div`
 `;
 
 
-const DeleteOperatorTouchWrapper = styled.div`
+const DeleteOperatorTouchWrapper = styled.div<ITouchWidth>`
   position: absolute;
   left: 0;
   top: 0;
@@ -414,7 +424,7 @@ const DeleteOperatorTouchWrapper = styled.div`
   align-items: center;
   justify-content: center;
   height: 100%;
-  width: ${(props : ITouchWidth) => props.width}px;
+  width: ${props => props.width +'px'};
   z-index: 0;
 `;
 
